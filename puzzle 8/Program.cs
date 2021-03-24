@@ -13,6 +13,7 @@ namespace puzzle_8
         static int[,] coordy = new int[3, 3];
         static int[,] memory = new int[3, 3];
         static int[,] ECXYGHS = new int[8, 7];
+        static int[,] jugada = new int[3, 3];
         static int[,] jugada1 = new int[3, 3];
         static int[,] jugada2 = new int[3, 3];
         static int[,] jugada3 = new int[3, 3];
@@ -25,9 +26,9 @@ namespace puzzle_8
             };
 
         static int[,] puzzle8 = new int[,] {
-                {1,2,3},
-                {4,0,6},
-                {7,8,5}
+                {0,1,5},
+                {4,2,6},
+                {3,8,7}
             };
 
 
@@ -38,16 +39,34 @@ namespace puzzle_8
 
             FindCero(puzzle8);
             Coordenadas(puzzle8, ECXYGHS);
-            Console.WriteLine("ECXYGHS: ");
-            PrintInt(ECXYGHS);
+            //Console.WriteLine("ECXYGHS: ");
+            //PrintInt(ECXYGHS);
             LlenaMemCoords();
-            Jugadas(puzzle8);
-            Jugada1(jugada1);
+            Jugadas(puzzle8, jugada);
+            Jugadas(puzzle8, jugada1);
+            Jugadas(puzzle8, jugada2);
+            Jugadas(puzzle8, jugada3);
+            Jugadas(puzzle8, jugada4);
+            Console.WriteLine("Elementos jugables encontrados en memoria: ");
+            PrintInt(memory);
+
+            Jugada1(jugada);
+
             Console.WriteLine("Primera Jugada: ");
             PrintInt(jugada1);
-            HeuristaG(jugada1);
-            Console.WriteLine("Heurística G: ");
-            PrintInt(G);
+
+            Console.WriteLine("Segunda Jugada: ");
+            PrintInt(jugada2);
+
+            Console.WriteLine("Tercera Jugada: ");
+            PrintInt(jugada3);
+
+            Console.WriteLine("Cuarta Jugada: ");
+            PrintInt(jugada4);
+
+            //HeuristaG(jugada1);
+            //Console.WriteLine("Heurística G: ");
+            //PrintInt(G);
             //Console.WriteLine("Coordenadas de Cero: " + "y -> " + Origen[0] + " / x -> "+Origen[1]);
             //Console.WriteLine("Coordenadas guaradas en memoria: ");
             //Print(coord);
@@ -99,10 +118,8 @@ namespace puzzle_8
                                 ECXYGHS[x, 3] = columnas;
                                 int abs = Math.Abs(Origen[0] - filas) + Math.Abs(Origen[1] - columnas);
                                 ECXYGHS[x, 1] = abs;
-                            }
-                            
+                            }             
                         }
-
                     }
                     coordy[filas, columnas] = filas;
                     coordx[filas, columnas] = columnas;
@@ -110,17 +127,13 @@ namespace puzzle_8
             }
         }
 
-        static void Jugadas(int[,]m)
-        { int n = 1;
+        static void Jugadas(int[,]m, int[,]n)
+        {
             for (int filas = 0; filas < m.GetLength(0); filas++)
             {
                 for (int columnas = 0; columnas < m.GetLength(1); columnas++)
                 {
-                    jugada1[filas, columnas] = m[filas, columnas];
-                    jugada2[filas, columnas] = m[filas, columnas];
-                    jugada3[filas, columnas] = m[filas, columnas];
-                    jugada4[filas, columnas] = m[filas, columnas];
-
+                    n[filas, columnas] = m[filas, columnas];
                 }
             }
             
@@ -141,36 +154,86 @@ namespace puzzle_8
 
         static void Jugada1(int[,] m)
         {
+            int n = 1;
             for (int filas = 0; filas < m.GetLength(0); filas++)
             {
                 for (int columnas = 0; columnas < m.GetLength(1); columnas++)
                 {
-                    if (m[filas, columnas] == memory[filas,columnas])
+                    if (memory[filas, columnas] == m[filas, columnas])
                     {
-                        memory[filas, columnas] = 0;
-                        m[Origen[0], Origen[1]] = m[filas, columnas];
-
+                        Jugadas(puzzle8, jugada);
+                        if (n==1)
+                        {
+                            m[Origen[0], Origen[1]] = memory[filas, columnas];
+                            m[filas, columnas] = 0;
+                            memory[filas, columnas] = 0;
+                            Jugadas(jugada, jugada1);
+                            n++;
+                        }
+                        else if (n == 2)
+                        {
+                            m[Origen[0], Origen[1]] = memory[filas, columnas];
+                            m[filas, columnas] = 0;
+                            memory[filas, columnas] = 0;
+                            Jugadas(jugada, jugada2);
+                            n++;
+                        }
+                        else if (n == 3)
+                        {
+                            m[Origen[0], Origen[1]] = memory[filas, columnas];
+                            m[filas, columnas] = 0;
+                            memory[filas, columnas] = 0;
+                            Jugadas(jugada, jugada3);
+                            
+                            n++;
+                        }
+                        else if (n == 4)
+                        {
+                            m[Origen[0], Origen[1]] = memory[filas, columnas];
+                            m[filas, columnas] = 0;
+                            memory[filas, columnas] = 0;
+                            Jugadas(jugada, jugada4);
+                            n--;
+                        }
                     }
                 }
             }
         }
+
         static void Jugada2(int[,] m)
         {
             for (int filas = 0; filas < m.GetLength(0); filas++)
             {
                 for (int columnas = 0; columnas < m.GetLength(1); columnas++)
                 {
-                    jugada2[filas, columnas] = puzzle8[filas, columnas];
+                    if (memory[filas, columnas] == m[filas, columnas])
+                    {
+                        m[Origen[0], Origen[1]] = memory[filas, columnas];
+                        m[filas, columnas] = 0;
+                        memory[filas, columnas] = 0;
+                    }
+
                 }
             }
         }
+
         static void Jugada3(int[,] m)
         {
             for (int filas = 0; filas < m.GetLength(0); filas++)
             {
                 for (int columnas = 0; columnas < m.GetLength(1); columnas++)
                 {
-                    jugada3[filas, columnas] = puzzle8[filas, columnas];
+                    if (memory[filas, columnas] == m[filas, columnas])
+                    {
+                        m[Origen[0], Origen[1]] = memory[filas, columnas];
+                        m[filas, columnas] = 0;
+                        memory[filas, columnas] = 0;
+                    }
+
+                    else if (memory[filas, columnas] == 0)
+                    {
+                        continue;
+                    }
                 }
             }
         }
@@ -180,7 +243,18 @@ namespace puzzle_8
             {
                 for (int columnas = 0; columnas < m.GetLength(1); columnas++)
                 {
-                    jugada4[filas, columnas] = puzzle8[filas, columnas];
+                    if (m[filas, columnas] == memory[filas, columnas])
+                    {
+                        continue;
+                        m[Origen[0], Origen[1]] = memory[filas, columnas];
+                        m[filas, columnas] = 0;
+                        memory[filas, columnas] = 0;
+                    }
+
+                    else if (memory[filas, columnas] == 0)
+                    {
+                        continue;
+                    }
                 }
             }
         }
