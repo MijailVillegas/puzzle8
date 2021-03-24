@@ -5,10 +5,18 @@ namespace puzzle_8
     class Program
     {
         //variables globales
-        static int[] coords = new int[2];
+        static int[] Origen = new int[2];
         static int attepmts = 4;
         static string[,] coord = new string[3, 3];
+        static int[,] G = new int[4,9];
+        static int[,] coordx = new int[3, 3];
+        static int[,] coordy = new int[3, 3];
         static int[,] memory = new int[3, 3];
+        static int[,] ECXYGHS = new int[8, 7];
+        static int[,] jugada1 = new int[3, 3];
+        static int[,] jugada2 = new int[3, 3];
+        static int[,] jugada3 = new int[3, 3];
+        static int[,] jugada4 = new int[3, 3];
 
         static int[,] goal = new int[,] {
                 {1,2,3},
@@ -17,8 +25,8 @@ namespace puzzle_8
             };
 
         static int[,] puzzle8 = new int[,] {
-                {1,0,3},
-                {4,2,6},
+                {1,2,3},
+                {4,0,6},
                 {7,8,5}
             };
 
@@ -29,39 +37,158 @@ namespace puzzle_8
 
 
             FindCero(puzzle8);
+            Coordenadas(puzzle8, ECXYGHS);
+            Console.WriteLine("ECXYGHS: ");
+            PrintInt(ECXYGHS);
             LlenaMemCoords();
-            Console.WriteLine("Coordenadas de Cero: " + "y -> " + coords[0] + " / x -> "+coords[1]);
-            Console.WriteLine("Coordenadas guaradas en memoria: ");
-            Print(coord);
+            Jugadas(puzzle8);
+            Jugada1(jugada1);
+            Console.WriteLine("Primera Jugada: ");
+            PrintInt(jugada1);
+            HeuristaG(jugada1);
+            Console.WriteLine("Heurística G: ");
+            PrintInt(G);
+            //Console.WriteLine("Coordenadas de Cero: " + "y -> " + Origen[0] + " / x -> "+Origen[1]);
+            //Console.WriteLine("Coordenadas guaradas en memoria: ");
+            //Print(coord);
+            //Console.WriteLine("Coordenadas x: ");
+            //PrintInt(coordx);
+            //Console.WriteLine("Coordenadas y: ");
+            //PrintInt(coordy);
             Console.WriteLine("Elementos jugables encontrados en memoria: ");
             PrintInt(memory);
-            Console.WriteLine("Puzzle para solucionar: ");
-            PrintInt(puzzle8);
-            Console.WriteLine("Jugadas disponibles: " + attepmts);
+            //Console.WriteLine("Puzzle para solucionar: ");
+            //PrintInt(puzzle8);
+            //Console.WriteLine("Jugadas disponibles: " + attepmts);
+
 
         }
 
         // busca coordenadas de cero
         static void FindCero(int[,] matriz1)
         {
-            for (int filas = 0; filas < 3; filas++)
+            for (int filas = 0; filas < matriz1.GetLength(0); filas++)
             {
-                for (int columnas = 0; columnas < 3; columnas++)
+                for (int columnas = 0; columnas < matriz1.GetLength(1); columnas++)
                 {
                     if (matriz1[filas, columnas] == 0)
                     {
-                        coords[0] = filas;
-                        coords[1] = columnas;
+                        Origen[0] = filas;
+                        Origen[1] = columnas;
                     }
+
+                }
+            }
+        }
+        // Llena la matriz de ECXYGHS (Elemento, Cálculo, coordenada X, coordenada Y, Heurística G, Heurística H, Suma de G+H)
+        static void Coordenadas(int[,] matriz, int[,] matriz2)
+        {
+            for (int filas = 0; filas < matriz.GetLength(0); filas++)
+            {
+                for (int columnas = 0; columnas < matriz.GetLength(1); columnas++)
+                {
+                    for (int x = 0; x < matriz2.GetLength(0); x++)
+                    {
+                        for (int y = 0; y < matriz2.GetLength(1); y++)
+                        {
+                            ECXYGHS[x, 0] = x+1;
+
+                            if (ECXYGHS[x, 0] == matriz[filas,columnas])
+                            {
+                                ECXYGHS[x, 2] = filas;
+                                ECXYGHS[x, 3] = columnas;
+                                int abs = Math.Abs(Origen[0] - filas) + Math.Abs(Origen[1] - columnas);
+                                ECXYGHS[x, 1] = abs;
+                            }
+                            
+                        }
+
+                    }
+                    coordy[filas, columnas] = filas;
+                    coordx[filas, columnas] = columnas;
+                }
+            }
+        }
+
+        static void Jugadas(int[,]m)
+        { int n = 1;
+            for (int filas = 0; filas < m.GetLength(0); filas++)
+            {
+                for (int columnas = 0; columnas < m.GetLength(1); columnas++)
+                {
+                    jugada1[filas, columnas] = m[filas, columnas];
+                    jugada2[filas, columnas] = m[filas, columnas];
+                    jugada3[filas, columnas] = m[filas, columnas];
+                    jugada4[filas, columnas] = m[filas, columnas];
+
+                }
+            }
+            
+        }
+        static void HeuristaG(int [,]m)
+        {
+
+
+            for (int x = 0; x < G.GetLength(0); x++)
+            {
+                for (int y = 0; y < G.GetLength(1); y++)
+                {
+                    
                 }
             }
         }
 
 
+        static void Jugada1(int[,] m)
+        {
+            for (int filas = 0; filas < m.GetLength(0); filas++)
+            {
+                for (int columnas = 0; columnas < m.GetLength(1); columnas++)
+                {
+                    if (m[filas, columnas] == memory[filas,columnas])
+                    {
+                        memory[filas, columnas] = 0;
+                        m[Origen[0], Origen[1]] = m[filas, columnas];
+
+                    }
+                }
+            }
+        }
+        static void Jugada2(int[,] m)
+        {
+            for (int filas = 0; filas < m.GetLength(0); filas++)
+            {
+                for (int columnas = 0; columnas < m.GetLength(1); columnas++)
+                {
+                    jugada2[filas, columnas] = puzzle8[filas, columnas];
+                }
+            }
+        }
+        static void Jugada3(int[,] m)
+        {
+            for (int filas = 0; filas < m.GetLength(0); filas++)
+            {
+                for (int columnas = 0; columnas < m.GetLength(1); columnas++)
+                {
+                    jugada3[filas, columnas] = puzzle8[filas, columnas];
+                }
+            }
+        }
+        static void Jugada4(int[,] m)
+        {
+            for (int filas = 0; filas < m.GetLength(0); filas++)
+            {
+                for (int columnas = 0; columnas < m.GetLength(1); columnas++)
+                {
+                    jugada4[filas, columnas] = puzzle8[filas, columnas];
+                }
+            }
+        }
+
         static void LlenaMemCoords()
         {
-            int y = coords[0];
-            int x = coords[1];
+            int y = Origen[0];
+            int x = Origen[1];
             int up = y - 1;
             int down = y + 1;
             int left = x - 1;
@@ -118,9 +245,9 @@ namespace puzzle_8
         // imprime matriz 
         static void PrintInt(int[,] p)
         {
-            for (int filas = 0; filas < 3; filas++)
+            for (int filas = 0; filas < p.GetLength(0); filas++)
             {
-                for (int columnas = 0; columnas < 3; columnas++)
+                for (int columnas = 0; columnas < p.GetLength(1); columnas++)
                 {
                     Console.Write(" " + p[filas, columnas]);
                 }
@@ -130,9 +257,9 @@ namespace puzzle_8
         
         static void Print(object[,] p)
         {
-            for (int filas = 0; filas < 3; filas++)
+            for (int filas = 0; filas < p.GetLength(0); filas++)
             {
-                for (int columnas = 0; columnas < 3; columnas++)
+                for (int columnas = 0; columnas < p.GetLength(1); columnas++)
                 {
                     Console.Write(" " + p[filas, columnas]);
                 }
